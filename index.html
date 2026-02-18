@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Huella Ecológica</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32; /* Verde ecológico */
+            --secondary-color: #0277bd; /* Azul agua */
+            --bg-color: #f1f8e9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+
+        .question {
+            margin-bottom: 25px;
+        }
+
+        .question h3 {
+            font-size: 16px;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+            cursor: pointer;
+        }
+
+        select:focus {
+            border-color: var(--primary-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #1b5e20;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Sección de resultados (oculta por defecto) */
+        #results {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .result-box {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .data-card {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            width: 45%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .data-card h2 {
+            margin: 0;
+            font-size: 28px;
+            color: var(--primary-color);
+        }
+
+        .data-card p {
+            margin: 5px 0 0 0;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .data-card.water h2 { color: var(--secondary-color); }
+
+        #motivation {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #e8f5e9;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="quiz-container">
+    <h1>🌍 Calculadora de Reciclaje</h1>
+    <p class="subtitle">Descubre cuánto ayudas al planeta con tus hábitos diarios (Resultados semanales)</p>
+
+    <form id="ecoForm">
+        <div class="question">
+            <h3>1. ¿Qué haces con los folios, libretas viejas y cartones?</h3>
+            <select id="q-papel" required>
+                <option value="" disabled selected>Elige una opción...</option>
+                <option value="high">Lo separo TODO y va al contenedor azul.</option>
+                <option value="medium">A veces separo el papel, otras veces va a la basura normal.</option>
+                <option value="low">Lo tiro todo a la papelera normal.</option>
+            </select>
+        </div>
+
+        <div class="question">
+            <h3>2. ¿Reciclas los envases de plástico, latas y briks?</h3>
+            <select id="q-plastico" required>
+                <option value="" disabled selected>Elige una opción...</option>
+                <option value="high">Siempre, tengo un cubo amarillo en casa.</option>
+                <option value="medium">Solo cuando me acuerdo o son envases grandes.</option>
+                <option value="low">No, todo va al mismo cubo.</option>
+            </select>
+        </div>
+
+        <div class="question">
+            <h3>3. ¿Qué pasa con los tarros de cristal y botellas de vidrio?</h3>
+            <select id="q-vidrio" required>
+                <option value="" disabled selected>Elige una opción...</option>
+                <option value="high">Van directos al contenedor verde.</option>
+                <option value="medium">Reutilizo algunos, el resto a la basura normal.</option>
+                <option value="low">Van a la basura normal con todo lo demás.</option>
+            </select>
+        </div>
+
+        <div class="question">
+            <h3>4. Cuando te duchas o te lavas los dientes...</h3>
+            <select id="q-agua" required>
+                <option value="" disabled selected>Elige una opción...</option>
+                <option value="high">Cierro el grifo al enjabonarme/cepillarme. Duchas rápidas.</option>
+                <option value="medium">Dejo el agua correr a veces, pero intento ser rápido.</option>
+                <option value="low">Me doy baños o dejo el grifo abierto todo el rato.</option>
+            </select>
+        </div>
+
+        <button type="submit">Calcular mi impacto</button>
+    </form>
+</div>
+
+<div class="container" id="results">
+    <h1>¡Tus Resultados! 🎉</h1>
+    <p class="subtitle">Gracias a tus hábitos, cada semana ahorras aproximadamente:</p>
+    
+    <div class="result-box">
+        <div class="data-card water">
+            <h2 id="water-saved">0</h2>
+            <p>Litros de Agua 💧</p>
+        </div>
+        <div class="data-card">
+            <h2 id="co2-saved">0</h2>
+            <p>Kg de CO2 ☁️</p>
+        </div>
+    </div>
+
+    <div id="motivation"></div>
+    
+    <button onclick="location.reload()" style="background-color: #666; margin-top: 20px;">Volver a intentar</button>
+</div>
+
+<script>
+    document.getElementById('ecoForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Evita que la página se recargue
+
+        // --- VALORES DE EJEMPLO PARA FÍSICA Y QUÍMICA ---
+        // Aquí tu compañera puede ajustar cuántos Litros (L) y Kg de CO2 (C) se ahorran a la semana en cada nivel
+        
+        const valores = {
+            papel: { 
+                high: { L: 150, C: 2.5 }, 
+                medium: { L: 50, C: 0.8 }, 
+                low: { L: 0, C: 0 } 
+            },
+            plastico: { 
+                high: { L: 80, C: 3.0 }, 
+                medium: { L: 30, C: 1.0 }, 
+                low: { L: 0, C: 0 } 
+            },
+            vidrio: { 
+                high: { L: 40, C: 4.0 }, 
+                medium: { L: 15, C: 1.5 }, 
+                low: { L: 0, C: 0 } 
+            },
+            agua: { 
+                high: { L: 600, C: 1.2 }, // Cierran grifo (Ahorran agua caliente = ahorran CO2)
+                medium: { L: 200, C: 0.4 }, 
+                low: { L: 0, C: 0 } 
+            }
+        };
+
+        // Recoger respuestas
+        const rPapel = document.getElementById('q-papel').value;
+        const rPlastico = document.getElementById('q-plastico').value;
+        const rVidrio = document.getElementById('q-vidrio').value;
+        const rAgua = document.getElementById('q-agua').value;
+
+        // Calcular totales
+        let totalAgua = valores.papel[rPapel].L + valores.plastico[rPlastico].L + valores.vidrio[rVidrio].L + valores.agua[rAgua].L;
+        let totalCO2 = valores.papel[rPapel].C + valores.plastico[rPlastico].C + valores.vidrio[rVidrio].C + valores.agua[rAgua].C;
+
+        // Mostrar los datos en la pantalla
+        document.getElementById('water-saved').innerText = totalAgua;
+        document.getElementById('co2-saved').innerText = totalCO2.toFixed(1); // 1 decimal para el CO2
+
+        // Lógica para el mensaje motivador
+        let mensaje = "";
+        let puntos = 0;
+        
+        // Sistema sencillo para ver si son muy ecológicos
+        if(rPapel === 'high') puntos++;
+        if(rPlastico === 'high') puntos++;
+        if(rVidrio === 'high') puntos++;
+        if(rAgua === 'high') puntos++;
+
+        if (puntos === 4) {
+            mensaje = "¡Eres un héroe del medio ambiente! 🦸‍♂️ Tu compromiso es espectacular. ¡Sigue así!";
+            document.getElementById('motivation').style.backgroundColor = "#c8e6c9";
+        } else if (puntos >= 2) {
+            mensaje = "¡Vas por buen camino! 🌱 Haces muchas cosas bien, pero con un pequeño esfuerzo extra podrías ayudar aún más al planeta.";
+            document.getElementById('motivation').style.backgroundColor = "#fff9c4";
+        } else {
+            mensaje = "¡Es hora de despertar! ⏰ Cada pequeña acción cuenta. Anímate a empezar reciclando al menos un material o cerrando el grifo.";
+            document.getElementById('motivation').style.backgroundColor = "#ffcdd2";
+        }
+
+        document.getElementById('motivation').innerText = mensaje;
+
+        // Ocultar formulario, mostrar resultados
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('results').style.display = 'block';
+    });
+</script>
+
+</body>
+</html>
