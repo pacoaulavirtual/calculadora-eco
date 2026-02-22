@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Calculadora de Impacto Gamificada</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#39FF14", // Neon Green
+              "primary-dark": "#2ccf10",
+              "background-light": "#F3F4F6",
+              "background-dark": "#121212",
+              "surface-dark": "#1E1E1E",
+              "surface-light": "#FFFFFF",
+              "text-light": "#1F2937",
+              "text-dark": "#E5E7EB",
+            },
+            fontFamily: {
+              display: ["Outfit", "sans-serif"],
+              body: ["Outfit", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "1rem",
+              xl: "1.5rem",
+              '2xl': "2rem",
+            },
+            boxShadow: {
+              'neon': '0 0 10px rgba(57, 255, 20, 0.3), 0 0 20px rgba(57, 255, 20, 0.2)',
+              'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            }
+          },
+        },
+      };
+    </script>
+<style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }.hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .light .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .selection-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .selection-card.selected {
+            border-color: #39FF14;
+            background-color: rgba(57, 255, 20, 0.1);
+            transform: translateY(-2px);
+        }
+        .light .selection-card.selected {
+            background-color: rgba(57, 255, 20, 0.15);
+            border-color: #2ccf10;
+        }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark antialiased transition-colors duration-300 min-h-screen flex flex-col relative overflow-x-hidden selection:bg-primary selection:text-black">
+<div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+<div class="absolute top-[-10%] right-[-20%] w-[400px] h-[400px] bg-primary opacity-10 blur-[100px] rounded-full"></div>
+<div class="absolute bottom-[10%] left-[-10%] w-[300px] h-[300px] bg-blue-500 opacity-10 blur-[100px] rounded-full"></div>
+</div>
+<header class="sticky top-0 z-30 w-full glass-panel border-b border-gray-200 dark:border-gray-800">
+<div class="px-5 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center shadow-lg">
+<span class="material-icons-round text-white text-xl">eco</span>
+</div>
+<h1 class="font-bold text-xl tracking-tight dark:text-white">EcoImpact</h1>
+</div>
+<button class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+<span class="material-icons-round text-gray-600 dark:text-gray-300">settings</span>
+</button>
+</div>
+<div class="px-5 pb-4">
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-gray-200 dark:border-gray-700 flex items-center justify-between">
+<div>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">Puntuación Actual</p>
+<div class="flex items-baseline gap-1">
+<span class="text-2xl font-bold text-gray-900 dark:text-white">640</span>
+<span class="text-xs text-primary font-bold">+25 pts</span>
+</div>
+</div>
+<div class="relative w-12 h-12">
+<svg class="w-12 h-12" viewBox="0 0 100 100">
+<circle class="text-gray-200 dark:text-gray-700 stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
+<circle class="text-primary progress-ring__circle stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-dasharray="251.2" stroke-dashoffset="100" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+<span class="material-icons-round text-primary text-sm">bolt</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow px-5 py-6 z-10 space-y-8 pb-32">
+<div class="text-center mb-2">
+<h2 class="text-2xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">Tu Huella Semanal</h2>
+<p class="text-gray-500 dark:text-gray-400 text-sm">Responde para desbloquear tu insignia ecológica.</p>
+</div>
+<section class="space-y-4 animate-fade-in-up">
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold px-2 py-1 rounded-md">01</span>
+<h3 class="font-semibold text-lg dark:text-gray-200">Papel y Cartón</h3>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400 mb-3">¿Qué haces con los folios, libretas viejas y cajas?</p>
+<div class="grid grid-cols-2 gap-3">
+<button class="selection-card group relative overflow-hidden bg-surface-light dark:bg-surface-dark border-2 border-transparent rounded-2xl p-4 text-left shadow-card hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary h-40 flex flex-col justify-between selected">
+<div class="absolute top-0 right-0 p-2 opacity-100 transition-opacity">
+<span class="material-icons-round text-primary text-lg">check_circle</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+<span class="material-icons-round text-gray-600 dark:text-gray-300">recycling</span>
+</div>
+<span class="font-medium text-sm text-gray-800 dark:text-gray-200 leading-tight">Lo reciclo todo siempre</span>
+</button>
+<button class="selection-card group relative overflow-hidden bg-surface-light dark:bg-surface-dark border-2 border-transparent rounded-2xl p-4 text-left shadow-card hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary h-40 flex flex-col justify-between">
+<div class="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-icons-round text-gray-400 text-lg">radio_button_unchecked</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+<span class="material-icons-round text-gray-600 dark:text-gray-300">delete</span>
+</div>
+<span class="font-medium text-sm text-gray-800 dark:text-gray-200 leading-tight">A veces lo tiro a la basura</span>
+</button>
+</div>
+</section>
+<section class="space-y-4">
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 text-xs font-bold px-2 py-1 rounded-md">02</span>
+<h3 class="font-semibold text-lg dark:text-gray-200">Plásticos y Envases</h3>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400 mb-3">¿Reciclas envases de plástico, latas y briks?</p>
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl p-1.5 flex shadow-sm border border-gray-200 dark:border-gray-700 relative">
+<button class="flex-1 py-3 px-2 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors relative z-10">Nunca</button>
+<button class="flex-1 py-3 px-2 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors relative z-10">A veces</button>
+<button class="flex-1 py-3 px-2 rounded-lg text-sm font-bold text-black bg-primary shadow-neon transition-all relative z-10">Siempre</button>
+</div>
+<div class="flex justify-between px-2 mt-1">
+<span class="text-[10px] text-gray-400">Impacto Alto</span>
+<span class="text-[10px] text-primary font-bold">Impacto Bajo</span>
+</div>
+</section>
+<section class="space-y-4">
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-xs font-bold px-2 py-1 rounded-md">03</span>
+<h3 class="font-semibold text-lg dark:text-gray-200">Vidrio</h3>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400 mb-3">¿Qué haces con los tarros y botellas?</p>
+<div class="flex overflow-x-auto gap-4 pb-4 hide-scrollbar -mx-5 px-5 snap-x">
+<div class="snap-center shrink-0 w-40 bg-surface-light dark:bg-surface-dark border-2 border-transparent hover:border-primary dark:hover:border-primary rounded-2xl p-4 shadow-card flex flex-col items-center justify-center gap-3 text-center transition-all cursor-pointer">
+<div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center">
+<span class="material-icons-round text-3xl text-purple-500">wine_bar</span>
+</div>
+<span class="text-sm font-medium dark:text-white">Contenedor Verde</span>
+</div>
+<div class="snap-center shrink-0 w-40 bg-surface-light dark:bg-surface-dark border-2 border-primary rounded-2xl p-4 shadow-neon flex flex-col items-center justify-center gap-3 text-center transition-all cursor-pointer relative overflow-hidden">
+<div class="absolute inset-0 bg-primary opacity-5"></div>
+<div class="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
+<span class="material-icons-round text-3xl text-primary">restart_alt</span>
+</div>
+<span class="text-sm font-bold dark:text-white">Reutilizo en casa</span>
+<div class="absolute top-2 right-2">
+<span class="material-icons-round text-primary text-sm">check_circle</span>
+</div>
+</div>
+<div class="snap-center shrink-0 w-40 bg-surface-light dark:bg-surface-dark border-2 border-transparent hover:border-red-500 dark:hover:border-red-500 rounded-2xl p-4 shadow-card flex flex-col items-center justify-center gap-3 text-center transition-all cursor-pointer">
+<div class="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
+<span class="material-icons-round text-3xl text-red-500">delete_outline</span>
+</div>
+<span class="text-sm font-medium dark:text-white">Basura general</span>
+</div>
+</div>
+</section>
+<section class="space-y-4">
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 text-xs font-bold px-2 py-1 rounded-md">04</span>
+<h3 class="font-semibold text-lg dark:text-gray-200">Agua</h3>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Cuando te duchas o te lavas los dientes...</p>
+<div class="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-card border border-gray-200 dark:border-gray-700">
+<div class="flex justify-between items-end mb-4">
+<span class="text-sm font-medium text-gray-600 dark:text-gray-300">Cierro el grifo</span>
+<span class="text-xs px-2 py-1 rounded bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">Gasto mucho</span>
+</div>
+<input class="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary hover:accent-green-400 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-900" max="100" min="0" type="range" value="75"/>
+<div class="mt-4 flex gap-3 overflow-x-auto pb-1">
+<span class="text-xs border border-primary text-primary px-3 py-1 rounded-full whitespace-nowrap bg-primary/10">Siempre cierro</span>
+<span class="text-xs border border-gray-200 dark:border-gray-700 text-gray-400 px-3 py-1 rounded-full whitespace-nowrap">A veces se me olvida</span>
+</div>
+</div>
+</section>
+<div class="pt-4">
+<button class="w-full bg-primary hover:bg-green-400 text-black font-bold py-4 rounded-xl shadow-neon transform transition active:scale-95 text-lg flex items-center justify-center gap-2">
+                Calcular mi impacto
+                <span class="material-icons-round">arrow_forward</span>
+</button>
+<p class="text-center text-xs text-gray-400 mt-3">Únete a más de 10,000 usuarios sostenibles</p>
+</div>
+</main>
+<nav class="fixed bottom-0 left-0 w-full glass-panel border-t border-gray-200 dark:border-gray-800 z-50 pb-safe">
+<div class="flex justify-around items-center h-16 px-2">
+<button class="flex flex-col items-center justify-center w-full h-full text-primary space-y-1">
+<span class="material-icons-round text-2xl">calculate</span>
+<span class="text-[10px] font-medium">Calculadora</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 space-y-1 transition-colors">
+<span class="material-icons-round text-2xl">leaderboard</span>
+<span class="text-[10px] font-medium">Ranking</span>
+</button>
+<div class="relative -top-6">
+<button class="w-14 h-14 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-400 flex items-center justify-center shadow-lg text-white transform hover:scale-105 transition-transform">
+<span class="material-icons-round text-2xl">qr_code_scanner</span>
+</button>
+</div>
+<button class="flex flex-col items-center justify-center w-full h-full text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 space-y-1 transition-colors">
+<span class="material-icons-round text-2xl">emoji_events</span>
+<span class="text-[10px] font-medium">Logros</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 space-y-1 transition-colors">
+<span class="material-icons-round text-2xl">person</span>
+<span class="text-[10px] font-medium">Perfil</span>
+</button>
+</div>
+<div class="h-5 w-full"></div>
+</nav>
+<script>
+        // Simple dark mode toggle for demonstration (usually handled by system preference or settings)
+        // This ensures the preview looks correct based on OS or user choice
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        // Interactive Elements Script
+        const cards = document.querySelectorAll('.selection-card');
+        cards.forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected from siblings
+                const parent = this.parentElement;
+                parent.querySelectorAll('.selection-card').forEach(c => {
+                    c.classList.remove('selected', 'border-primary');
+                    c.classList.add('border-transparent');
+                    const icon = c.querySelector('.absolute .material-icons-round');
+                    if(icon) {
+                        icon.textContent = 'radio_button_unchecked';
+                        icon.classList.remove('text-primary');
+                        icon.classList.add('text-gray-400');
+                        icon.parentElement.classList.remove('opacity-100');
+                        icon.parentElement.classList.add('opacity-0', 'group-hover:opacity-100');
+                    }
+                });
+                // Add selected to clicked
+                this.classList.add('selected');
+                const icon = this.querySelector('.absolute .material-icons-round');
+                if(icon) {
+                    icon.textContent = 'check_circle';
+                    icon.classList.remove('text-gray-400');
+                    icon.classList.add('text-primary');
+                    icon.parentElement.classList.remove('opacity-0', 'group-hover:opacity-100');
+                    icon.parentElement.classList.add('opacity-100');
+                }
+            });
+        });
+    </script>
+
+</body></html>
